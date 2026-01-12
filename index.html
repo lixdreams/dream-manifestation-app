@@ -89,14 +89,12 @@ let affirmations = JSON.parse(localStorage.getItem('affirmations')) || defaultAf
 let history = JSON.parse(localStorage.getItem('history')) || {};
 let challenges = { daily: 50 };
 let currentTheme = null;
-let tally = 0;
 let currentIndex = 0;
 let mode = 'scroll'; // scroll or rotate
 
 function openTheme(theme){
   currentTheme = theme;
   affirmations[theme] = affirmations[theme] || [];
-  tally = Number(localStorage.getItem('tally_' + theme)) || 0;
   currentIndex = 0;
 
   document.getElementById('themes').style.display='none';
@@ -129,13 +127,16 @@ function renderView(){
     affEl.style.display='none';
     tapEl.style.display='none';
     countEl.style.display='none';
+
     if(affirmations[currentTheme].length===0){
       list.innerHTML='<div style="color:var(--muted)">No affirmations yet. Add one below!</div>';
       return;
     }
+
     affirmations[currentTheme].forEach((text,index)=>{
       const container = document.createElement('div');
       container.className='rampage-row';
+
       const textDiv = document.createElement('div');
       textDiv.className='rampage-text';
       textDiv.innerText = text;
@@ -143,12 +144,15 @@ function renderView(){
       const tapBtn = document.createElement('div');
       tapBtn.className='tap-area';
       tapBtn.innerText='Tap';
-      tapBtn.onclick=()=>tapAffirmIndex(index);
+      tapBtn.onclick = () => {
+        tapAffirmIndex(index);
+        renderView(); // update immediately
+      };
 
       const deleteBtn = document.createElement('div');
       deleteBtn.className='delete-btn';
       deleteBtn.innerText='Delete';
-      deleteBtn.onclick=()=>deleteAffirmation(index);
+      deleteBtn.onclick = () => deleteAffirmation(index);
 
       const countDiv = document.createElement('div');
       countDiv.className='count';
@@ -162,7 +166,7 @@ function renderView(){
       container.appendChild(countDiv);
       list.appendChild(container);
     });
-  } else {
+  } else { // rotate mode
     affEl.style.display='block';
     tapEl.style.display='flex';
     countEl.style.display='block';
@@ -255,4 +259,4 @@ function goBack(){
 }
 </script>
 </body>
-</html>
+</html
