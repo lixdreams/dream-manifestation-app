@@ -1,42 +1,154 @@
 index.html
-<!-- FULL HTML WITH WORKING TAP BUTTONS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dream – Manifestation App</title>
+
 <style>
-:root {
-  --bg: linear-gradient(180deg, #0f1023, #1b1d3a);
-  --card: rgba(255, 255, 255, 0.08);
-  --accent: #c7b8ff;
-  --text: #ffffff;
-  --muted: #b6b6d8;
+:root{
+  --bg: linear-gradient(180deg,#0f1023,#1b1d3a);
+  --card: rgba(255,255,255,0.08);
+  --accent:#c7b8ff;
+  --text:#fff;
+  --muted:#b6b6d8;
 }
-* { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:16px; }
-h1 { font-weight:500; margin:12px 0 4px; }
-.subtitle { color:var(--muted); font-size:0.9rem; }
-.themes { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; width:100%; max-width:500px; margin-top:24px; }
-.theme { background:var(--card); border-radius:18px; padding:18px; text-align:center; cursor:pointer; transition: transform 0.15s ease; user-select:none; }
-.theme:active { transform:scale(0.96); }
-.counter-screen { display:none; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; width:100%; min-height:80vh; padding-top:16px; }
-.affirmation, .rampage-text { font-size:1.3rem; max-width:340px; margin-bottom:12px; line-height:1.4; white-space: pre-line; word-wrap: break-word; }
-.tap-area { width:120px; min-height:40px; border-radius:12px; background:radial-gradient(circle,#c7b8ff33,#c7b8ff11); display:flex; align-items:center; justify-content:center; font-size:1.2rem; user-select:none; cursor:pointer; transition: transform 0.1s ease; margin-top:6px; margin-right:6px; }
-.tap-area:active { transform:scale(0.95); }
-.delete-btn { width:60px; min-height:36px; border-radius:12px; background:#ff4d4d33; color:#ff4d4d; display:flex; align-items:center; justify-content:center; font-size:0.9rem; cursor:pointer; transition: transform 0.1s ease; margin-top:6px; }
-.delete-btn:active { transform:scale(0.95); }
-.count { margin-top:4px; color:var(--muted); font-size:0.85rem; }
-button { margin-top:12px; background:none; border:1px solid var(--accent); color:var(--accent); padding:8px 16px; border-radius:999px; cursor:pointer; font-size:0.85rem; }
-textarea { padding:8px; border-radius:8px; border:none; width:90%; margin-top:12px; background:#ffffff11; color:#fff; min-height:80px; resize:vertical; }
-.history { margin-top:12px; max-width:340px; width:100%; text-align:left; font-size:0.75rem; color:var(--muted); white-space: pre-line; }
-.challenge { margin-top:12px; color:var(--accent); font-size:0.85rem; }
-.rampages-list { display:flex; flex-direction:column; gap:12px; margin-top:16px; width:100%; max-width:380px; overflow-y:auto; max-height:300px; }
-.mode-toggle { margin-top:12px; font-size:0.85rem; border:1px solid var(--accent); border-radius:999px; padding:6px 12px; cursor:pointer; color:var(--accent); background:none; }
-.rampage-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,sans-serif;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+h1{margin:8px 0 4px;font-weight:500}
+.subtitle{color:var(--muted);font-size:.9rem}
+
+.themes{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:14px;
+  width:100%;
+  max-width:500px;
+  margin-top:24px;
+}
+
+.theme{
+  background:var(--card);
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+  cursor:pointer;
+  user-select:none;
+}
+.theme:active{transform:scale(.96)}
+
+.counter{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+}
+
+.affirmation{
+  font-size:1.3rem;
+  max-width:360px;
+  line-height:1.4;
+  margin:16px 0;
+  white-space:pre-line;
+}
+
+.tap{
+  width:120px;
+  height:44px;
+  border-radius:14px;
+  background:radial-gradient(circle,#c7b8ff33,#c7b8ff11);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.tap:active{transform:scale(.95)}
+
+.count{margin-top:6px;color:var(--muted);font-size:.85rem}
+
+textarea{
+  width:90%;
+  max-width:380px;
+  margin-top:14px;
+  padding:10px;
+  border-radius:10px;
+  background:#ffffff11;
+  border:none;
+  color:#fff;
+  resize:vertical;
+}
+
+button{
+  margin-top:10px;
+  border:1px solid var(--accent);
+  background:none;
+  color:var(--accent);
+  padding:8px 16px;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.list{
+  width:100%;
+  max-width:380px;
+  margin-top:16px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.row{
+  background:var(--card);
+  padding:12px;
+  border-radius:14px;
+}
+
+.row-text{white-space:pre-line}
+
+.row-actions{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+
+.small-btn{
+  flex:1;
+  padding:6px;
+  border-radius:10px;
+  text-align:center;
+  cursor:pointer;
+  background:#ffffff11;
+}
+
+.delete{color:#ff8b8b}
+
+.history{
+  margin-top:14px;
+  font-size:.75rem;
+  color:var(--muted);
+  white-space:pre-line;
+}
+
+.mode{
+  margin-top:10px;
+  font-size:.85rem;
+}
 </style>
 </head>
+
 <body>
 
 <h1>Dream</h1>
@@ -51,213 +163,155 @@ textarea { padding:8px; border-radius:8px; border:none; width:90%; margin-top:12
   <div class="theme" onclick="openTheme('Rampages')">💥 Rampages</div>
 </div>
 
-<div class="counter-screen" id="counter">
-  <div id="affirmation" class="affirmation"></div>
-  <div class="tap-area" id="tapArea" onclick="tapAffirm()">Tap</div>
+<div class="counter" id="counter">
+  <div class="affirmation" id="affirmation"></div>
+  <div class="tap" id="tapBtn" onclick="tapRotate()">Tap</div>
   <div class="count" id="count"></div>
 
-  <textarea id="newAffirmation" placeholder="Add your own affirmation or rampage"></textarea>
+  <textarea id="input" placeholder="Add affirmation or rampage"></textarea>
   <button onclick="addAffirmation()">Add</button>
 
-  <button id="autoAffirmBtn" onclick="addAutoAffirmation()">Add Auto Affirmation</button>
-  <button id="modeToggle" class="mode-toggle" onclick="toggleMode()" style="display:none;">Switch to Rotate Mode</button>
+  <button id="autoBtn" onclick="addAuto()">Add Auto Affirmation</button>
+  <button class="mode" onclick="toggleMode()" id="modeBtn">Switch to Rotate Mode</button>
 
-  <div class="challenge" id="challenge"></div>
+  <div class="list" id="list"></div>
   <div class="history" id="history"></div>
-  <div id="rampagesList" class="rampages-list"></div>
+
   <button onclick="goBack()">Back</button>
 </div>
 
 <script>
-const defaultAffirmations = {
-  Wealth: ["Money flows to me effortlessly.","I attract abundance every day.","I am worthy of wealth."],
-  Love: ["I am deeply loved and valued.","I attract positive loving relationships.","Love flows freely to me."],
-  Career: ["I am successful in everything I do.","I achieve my goals easily.","Opportunities come to me effortlessly."],
-  Confidence: ["I trust myself completely.","I am confident in my abilities.","I radiate self-assurance."],
-  Growth: ["I am constantly evolving into my best self.","I embrace change positively.","I learn from every experience."],
-  Rampages: []
-};
+/* ---------- HELPERS ---------- */
+function normalizeTheme(t){return t.trim()}
 
-const autoAffirmationsBank = {
-  Wealth: ["I am open to receiving wealth every day.","Abundance flows to me easily and effortlessly.","I deserve to live in prosperity.","Money comes to me from expected and unexpected sources."],
-  Love: ["I attract positive loving relationships.","Love surrounds me wherever I go.","I am worthy of unconditional love."],
-  Career: ["I attract amazing career opportunities.","I excel in everything I do.","I am recognized and rewarded for my talents."],
-  Confidence: ["I stand tall and speak my truth confidently.","I trust myself more every day.","Confidence flows through me effortlessly."],
-  Growth: ["I am always evolving into my best self.","Every challenge helps me grow stronger.","I embrace positive change."]
-};
+/* ---------- DATA ---------- */
+const defaults={
+  Wealth:["Money flows to me easily","I am abundant"],
+  Love:["I am deeply loved","Love surrounds me"],
+  Career:["I succeed effortlessly","Opportunities find me"],
+  Confidence:["I trust myself","I am powerful"],
+  Growth:["I evolve every day","I welcome change"],
+  Rampages:[]
+}
 
-let affirmations = JSON.parse(localStorage.getItem('affirmations')) || defaultAffirmations;
-let history = JSON.parse(localStorage.getItem('history')) || {};
-let challenges = { daily: 50 };
-let currentTheme = null;
-let currentIndex = 0;
-let mode = 'scroll'; // scroll or rotate
+const autoBank={
+  Wealth:["Abundance is natural to me","Money comes from many sources"],
+  Love:["I attract healthy love","I am worthy of love"],
+  Career:["I thrive professionally","I am respected at work"],
+  Confidence:["I radiate confidence","I believe in myself"],
+  Growth:["I grow with ease","Change benefits me"]
+}
 
-function openTheme(theme){
-  currentTheme = theme;
-  affirmations[theme] = affirmations[theme] || [];
-  currentIndex = 0;
+let affirmations=JSON.parse(localStorage.getItem("affirmations"))||defaults
+let history=JSON.parse(localStorage.getItem("history"))||{}
+let theme=null,index=0,mode="scroll"
 
-  document.getElementById('themes').style.display='none';
-  document.getElementById('counter').style.display='flex';
+/* ---------- CORE ---------- */
+function openTheme(t){
+  theme=normalizeTheme(t)
+  affirmations[theme]=affirmations[theme]||[]
+  index=0
+  mode="scroll"
 
-  document.getElementById('autoAffirmBtn').style.display = theme === 'Rampages' ? 'none' : 'block';
-  document.getElementById('modeToggle').style.display = 'block';
-  document.getElementById('modeToggle').innerText = 'Switch to Rotate Mode';
-  mode = 'scroll';
+  document.getElementById("themes").style.display="none"
+  document.getElementById("counter").style.display="flex"
+  document.getElementById("autoBtn").style.display=theme==="Rampages"?"none":"block"
+  document.getElementById("modeBtn").innerText="Switch to Rotate Mode"
 
-  renderView();
-  updateChallenge();
-  updateHistory();
+  render()
 }
 
 function toggleMode(){
-  mode = mode==='scroll'?'rotate':'scroll';
-  document.getElementById('modeToggle').innerText = mode==='scroll'?'Switch to Rotate Mode':'Switch to Scroll Mode';
-  renderView();
+  mode=mode==="scroll"?"rotate":"scroll"
+  document.getElementById("modeBtn").innerText=
+    mode==="scroll"?"Switch to Rotate Mode":"Switch to Scroll Mode"
+  render()
 }
 
-function renderView(){
-  const affEl = document.getElementById('affirmation');
-  const tapEl = document.getElementById('tapArea');
-  const countEl = document.getElementById('count');
-  const list = document.getElementById('rampagesList');
-  list.innerHTML = '';
+function render(){
+  const list=document.getElementById("list")
+  const aff=document.getElementById("affirmation")
+  const tap=document.getElementById("tapBtn")
+  const count=document.getElementById("count")
+  list.innerHTML=""
 
-  if(mode==='scroll'){
-    affEl.style.display='none';
-    tapEl.style.display='none';
-    countEl.style.display='none';
+  if(mode==="scroll"){
+    aff.style.display=tap.style.display=count.style.display="none"
 
-    if(affirmations[currentTheme].length===0){
-      list.innerHTML='<div style="color:var(--muted)">No affirmations yet. Add one below!</div>';
-      return;
-    }
-
-    affirmations[currentTheme].forEach((text,index)=>{
-      const container = document.createElement('div');
-      container.className='rampage-row';
-
-      const textDiv = document.createElement('div');
-      textDiv.className='rampage-text';
-      textDiv.innerText = text;
-
-      const tapBtn = document.createElement('div');
-      tapBtn.className='tap-area';
-      tapBtn.innerText='Tap';
-      // FIXED: Use addEventListener to ensure it works
-      tapBtn.addEventListener('click', ()=> {
-        tapAffirmIndex(index);
-        renderView();
-      });
-
-      const deleteBtn = document.createElement('div');
-      deleteBtn.className='delete-btn';
-      deleteBtn.innerText='Delete';
-      deleteBtn.addEventListener('click', ()=> deleteAffirmation(index));
-
-      const countDiv = document.createElement('div');
-      countDiv.className='count';
-      const today = new Date().toISOString().slice(0,10);
-      const count = history[today] && history[today][currentTheme] && history[today][currentTheme][index] ? history[today][currentTheme][index] : 0;
-      countDiv.innerText = `Affirmed ${count} times today`;
-
-      container.appendChild(textDiv);
-      container.appendChild(tapBtn);
-      container.appendChild(deleteBtn);
-      container.appendChild(countDiv);
-      list.appendChild(container);
-    });
-  } else { // rotate mode
-    affEl.style.display='block';
-    tapEl.style.display='flex';
-    countEl.style.display='block';
-    if(affirmations[currentTheme].length===0){
-      affirmations[currentTheme].push("Your first affirmation");
-      localStorage.setItem('affirmations',JSON.stringify(affirmations));
-    }
-    affEl.innerText = affirmations[currentTheme][currentIndex];
-    const today = new Date().toISOString().slice(0,10);
-    const count = history[today] && history[today][currentTheme] && history[today][currentTheme][currentIndex] ? history[today][currentTheme][currentIndex] : 0;
-    countEl.innerText = `Affirmed ${count} times today`;
+    affirmations[theme].forEach((text,i)=>{
+      const row=document.createElement("div")
+      row.className="row"
+      row.innerHTML=`
+        <div class="row-text">${text}</div>
+        <div class="row-actions">
+          <div class="small-btn" onclick="tapIndex(${i})">Tap</div>
+          <div class="small-btn delete" onclick="del(${i})">Delete</div>
+        </div>
+        <div class="count">${getCount(i)} taps today</div>
+      `
+      list.appendChild(row)
+    })
+  } else {
+    aff.style.display=tap.style.display=count.style.display="block"
+    aff.innerText=affirmations[theme][index]||"Add one below"
+    count.innerText=`${getCount(index)} taps today`
   }
+
+  updateHistory()
 }
 
-function tapAffirm(){
-  tapAffirmIndex(currentIndex);
-  if(mode==='rotate'){
-    currentIndex = (currentIndex + 1) % affirmations[currentTheme].length;
-    renderView();
-  }
+function tapIndex(i){
+  const d=new Date().toISOString().slice(0,10)
+  history[d]=history[d]||{}
+  history[d][theme]=history[d][theme]||[]
+  history[d][theme][i]=(history[d][theme][i]||0)+1
+  localStorage.setItem("history",JSON.stringify(history))
+  render()
 }
 
-function tapAffirmIndex(index){
-  const today = new Date().toISOString().slice(0,10);
-  history[today] = history[today] || {};
-  history[today][currentTheme] = history[today][currentTheme] || [];
-  history[today][currentTheme][index] = (history[today][currentTheme][index]||0)+1;
-  localStorage.setItem('history',JSON.stringify(history));
-  updateHistory();
-  updateChallenge();
+function tapRotate(){
+  tapIndex(index)
+  index=(index+1)%affirmations[theme].length
 }
 
-function deleteAffirmation(index){
-  if(!confirm("Are you sure you want to delete this affirmation?")) return;
-  affirmations[currentTheme].splice(index,1);
-  localStorage.setItem('affirmations',JSON.stringify(affirmations));
-  const today = new Date().toISOString().slice(0,10);
-  if(history[today] && history[today][currentTheme]) history[today][currentTheme].splice(index,1);
-  localStorage.setItem('history',JSON.stringify(history));
-  if(currentIndex >= affirmations[currentTheme].length) currentIndex = 0;
-  renderView();
+function getCount(i){
+  const d=new Date().toISOString().slice(0,10)
+  return history[d]?.[theme]?.[i]||0
+}
+
+function del(i){
+  affirmations[theme].splice(i,1)
+  localStorage.setItem("affirmations",JSON.stringify(affirmations))
+  render()
 }
 
 function addAffirmation(){
-  const text = document.getElementById('newAffirmation').value.trim();
-  if(!text) return;
-  affirmations[currentTheme].push(text);
-  localStorage.setItem('affirmations',JSON.stringify(affirmations));
-  document.getElementById('newAffirmation').value='';
-  alert("Affirmation added!");
-  renderView();
+  const v=document.getElementById("input").value.trim()
+  if(!v)return
+  affirmations[theme].push(v)
+  localStorage.setItem("affirmations",JSON.stringify(affirmations))
+  document.getElementById("input").value=""
+  render()
 }
 
-function addAutoAffirmation(){
-  if(currentTheme==="Rampages") return;
-  const bank = autoAffirmationsBank[currentTheme];
-  const existing = new Set(affirmations[currentTheme]);
-  const options = bank.filter(a=>!existing.has(a));
-  if(options.length===0){ alert("No new auto affirmations left!"); return; }
-  const newAff = options[Math.floor(Math.random()*options.length)];
-  affirmations[currentTheme].push(newAff);
-  localStorage.setItem('affirmations',JSON.stringify(affirmations));
-  alert("Auto affirmation added!");
-  renderView();
-}
-
-function updateChallenge(){
-  if(currentTheme==="Rampages") return;
-  const today = new Date().toISOString().slice(0,10);
-  const dailyCount = history[today] && history[today][currentTheme] ? history[today][currentTheme].reduce((a,b)=>a+b,0) : 0;
-  const remaining = Math.max(challenges.daily - dailyCount,0);
-  document.getElementById('challenge').innerText=`Daily goal: ${challenges.daily} | Remaining: ${remaining}`;
+function addAuto(){
+  const pool=autoBank[theme]
+  if(!pool)return
+  affirmations[theme].push(pool[Math.floor(Math.random()*pool.length)])
+  localStorage.setItem("affirmations",JSON.stringify(affirmations))
+  render()
 }
 
 function updateHistory(){
-  const displayEl = document.getElementById('history');
-  let display = '';
-  const today = new Date().toISOString().slice(0,10);
-  if(history[today] && history[today][currentTheme]){
-    history[today][currentTheme].forEach((val,index)=>{
-      display += `#${index+1}: ${val} taps\n`;
-    });
-  }
-  displayEl.innerText = display || 'No history yet';
+  const d=new Date().toISOString().slice(0,10)
+  let txt=""
+  history[d]?.[theme]?.forEach((v,i)=>txt+=`#${i+1}: ${v} taps\n`)
+  document.getElementById("history").innerText=txt||"No history yet"
 }
 
 function goBack(){
-  document.getElementById('counter').style.display='none';
-  document.getElementById('themes').style.display='grid';
+  document.getElementById("counter").style.display="none"
+  document.getElementById("themes").style.display="grid"
 }
 </script>
 </body>
