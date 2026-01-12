@@ -2,9 +2,9 @@ index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dream – Manifestation App</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dream – Manifestation</title>
 
 <style>
 :root{
@@ -14,8 +14,7 @@ index.html
   --text:#fff;
   --muted:#b6b6d8;
 }
-
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
 body{
   margin:0;
   min-height:100vh;
@@ -23,117 +22,69 @@ body{
   color:var(--text);
   font-family:system-ui,sans-serif;
   padding:16px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
 }
+h1{text-align:center;margin:6px 0}
+.subtitle{text-align:center;color:var(--muted);font-size:.9rem}
 
-h1{margin:8px 0 4px;font-weight:500}
-.subtitle{color:var(--muted);font-size:.9rem}
-
-.themes{
+.grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
   gap:14px;
-  width:100%;
   max-width:500px;
-  margin-top:24px;
+  margin:24px auto;
 }
-
-.theme{
+.card{
   background:var(--card);
-  border-radius:18px;
   padding:18px;
+  border-radius:18px;
   text-align:center;
   cursor:pointer;
-  user-select:none;
-}
-.theme:active{transform:scale(.96)}
-
-.counter{
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  width:100%;
 }
 
-.affirmation{
+.screen{display:none;max-width:500px;margin:0 auto}
+.aff{
   font-size:1.3rem;
-  max-width:360px;
   line-height:1.4;
-  margin:16px 0;
   white-space:pre-line;
+  margin:16px 0;
 }
-
 .tap{
-  width:120px;
-  height:44px;
-  border-radius:14px;
   background:radial-gradient(circle,#c7b8ff33,#c7b8ff11);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
   cursor:pointer;
 }
-.tap:active{transform:scale(.95)}
-
-.count{margin-top:6px;color:var(--muted);font-size:.85rem}
+.count{color:var(--muted);font-size:.85rem;margin-top:4px}
 
 textarea{
-  width:90%;
-  max-width:380px;
-  margin-top:14px;
+  width:100%;
   padding:10px;
-  border-radius:10px;
+  margin-top:12px;
+  border-radius:12px;
   background:#ffffff11;
   border:none;
   color:#fff;
-  resize:vertical;
 }
-
 button{
   margin-top:10px;
+  padding:8px 14px;
+  border-radius:999px;
   border:1px solid var(--accent);
   background:none;
   color:var(--accent);
-  padding:8px 16px;
-  border-radius:999px;
   cursor:pointer;
 }
 
-.list{
-  width:100%;
-  max-width:380px;
-  margin-top:16px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
+.list{margin-top:16px;display:flex;flex-direction:column;gap:12px}
 .row{
   background:var(--card);
-  padding:12px;
   border-radius:14px;
+  padding:12px;
 }
-
-.row-text{white-space:pre-line}
-
-.row-actions{
-  display:flex;
-  gap:8px;
-  margin-top:8px;
-}
-
-.small-btn{
-  flex:1;
-  padding:6px;
-  border-radius:10px;
-  text-align:center;
-  cursor:pointer;
-  background:#ffffff11;
-}
-
-.delete{color:#ff8b8b}
+.actions{display:flex;gap:8px;margin-top:8px}
+.small{flex:1;padding:6px;border-radius:10px;text-align:center;background:#ffffff11;cursor:pointer}
+.delete{color:#ff9b9b}
 
 .history{
   margin-top:14px;
@@ -141,11 +92,7 @@ button{
   color:var(--muted);
   white-space:pre-line;
 }
-
-.mode{
-  margin-top:10px;
-  font-size:.85rem;
-}
+.challenge{margin-top:10px;color:var(--accent);font-size:.85rem}
 </style>
 </head>
 
@@ -154,165 +101,138 @@ button{
 <h1>Dream</h1>
 <div class="subtitle">Tap to affirm ✨</div>
 
-<div class="themes" id="themes">
-  <div class="theme" onclick="openTheme('Wealth')">💸 Wealth</div>
-  <div class="theme" onclick="openTheme('Love')">💗 Love</div>
-  <div class="theme" onclick="openTheme('Career')">💼 Career</div>
-  <div class="theme" onclick="openTheme('Confidence')">✨ Confidence</div>
-  <div class="theme" onclick="openTheme('Growth')">🌱 Growth</div>
-  <div class="theme" onclick="openTheme('Rampages')">💥 Rampages</div>
+<div class="grid" id="home">
+  <div class="card" onclick="openTheme('Wealth')">💸 Wealth</div>
+  <div class="card" onclick="openTheme('Love')">💗 Love</div>
+  <div class="card" onclick="openTheme('Career')">💼 Career</div>
+  <div class="card" onclick="openTheme('Confidence')">✨ Confidence</div>
+  <div class="card" onclick="openTheme('Growth')">🌱 Growth</div>
+  <div class="card" onclick="openTheme('Rampages')">💥 Rampages</div>
 </div>
 
-<div class="counter" id="counter">
-  <div class="affirmation" id="affirmation"></div>
-  <div class="tap" id="tapBtn" onclick="tapRotate()">Tap</div>
+<div class="screen" id="screen">
+  <div class="aff" id="aff"></div>
+  <div class="tap" id="tap" onclick="tapRotate()">Tap</div>
   <div class="count" id="count"></div>
 
   <textarea id="input" placeholder="Add affirmation or rampage"></textarea>
-  <button onclick="addAffirmation()">Add</button>
+  <button onclick="add()">Add</button>
+  <button onclick="toggle()">Switch Mode</button>
 
-  <button id="autoBtn" onclick="addAuto()">Add Auto Affirmation</button>
-  <button class="mode" onclick="toggleMode()" id="modeBtn">Switch to Rotate Mode</button>
-
+  <div class="challenge" id="challenge"></div>
   <div class="list" id="list"></div>
   <div class="history" id="history"></div>
 
-  <button onclick="goBack()">Back</button>
+  <button onclick="back()">Back</button>
 </div>
 
 <script>
-/* ---------- HELPERS ---------- */
-function normalizeTheme(t){return t.trim()}
+const DAILY_GOAL = 50;
+const today = () => new Date().toISOString().slice(0,10);
 
-/* ---------- DATA ---------- */
-const defaults={
-  Wealth:["Money flows to me easily","I am abundant"],
-  Love:["I am deeply loved","Love surrounds me"],
-  Career:["I succeed effortlessly","Opportunities find me"],
-  Confidence:["I trust myself","I am powerful"],
-  Growth:["I evolve every day","I welcome change"],
-  Rampages:[]
+let data = JSON.parse(localStorage.getItem("data")) || {
+  Wealth:[], Love:[], Career:[], Confidence:[], Growth:[], Rampages:[]
+};
+let history = JSON.parse(localStorage.getItem("history")) || {};
+let theme="", index=0, mode="scroll";
+
+function save(){
+  localStorage.setItem("data",JSON.stringify(data));
+  localStorage.setItem("history",JSON.stringify(history));
 }
 
-const autoBank={
-  Wealth:["Abundance is natural to me","Money comes from many sources"],
-  Love:["I attract healthy love","I am worthy of love"],
-  Career:["I thrive professionally","I am respected at work"],
-  Confidence:["I radiate confidence","I believe in myself"],
-  Growth:["I grow with ease","Change benefits me"]
-}
-
-let affirmations=JSON.parse(localStorage.getItem("affirmations"))||defaults
-let history=JSON.parse(localStorage.getItem("history"))||{}
-let theme=null,index=0,mode="scroll"
-
-/* ---------- CORE ---------- */
 function openTheme(t){
-  theme=normalizeTheme(t)
-  affirmations[theme]=affirmations[theme]||[]
-  index=0
-  mode="scroll"
-
-  document.getElementById("themes").style.display="none"
-  document.getElementById("counter").style.display="flex"
-  document.getElementById("autoBtn").style.display=theme==="Rampages"?"none":"block"
-  document.getElementById("modeBtn").innerText="Switch to Rotate Mode"
-
-  render()
+  theme=t;
+  index=0;
+  mode="scroll";
+  document.getElementById("home").style.display="none";
+  document.getElementById("screen").style.display="block";
+  render();
 }
 
-function toggleMode(){
-  mode=mode==="scroll"?"rotate":"scroll"
-  document.getElementById("modeBtn").innerText=
-    mode==="scroll"?"Switch to Rotate Mode":"Switch to Scroll Mode"
-  render()
+function toggle(){
+  mode = mode==="scroll" ? "rotate" : "scroll";
+  render();
 }
 
-function render(){
-  const list=document.getElementById("list")
-  const aff=document.getElementById("affirmation")
-  const tap=document.getElementById("tapBtn")
-  const count=document.getElementById("count")
-  list.innerHTML=""
-
-  if(mode==="scroll"){
-    aff.style.display=tap.style.display=count.style.display="none"
-
-    affirmations[theme].forEach((text,i)=>{
-      const row=document.createElement("div")
-      row.className="row"
-      row.innerHTML=`
-        <div class="row-text">${text}</div>
-        <div class="row-actions">
-          <div class="small-btn" onclick="tapIndex(${i})">Tap</div>
-          <div class="small-btn delete" onclick="del(${i})">Delete</div>
-        </div>
-        <div class="count">${getCount(i)} taps today</div>
-      `
-      list.appendChild(row)
-    })
-  } else {
-    aff.style.display=tap.style.display=count.style.display="block"
-    aff.innerText=affirmations[theme][index]||"Add one below"
-    count.innerText=`${getCount(index)} taps today`
-  }
-
-  updateHistory()
-}
-
-function tapIndex(i){
-  const d=new Date().toISOString().slice(0,10)
-  history[d]=history[d]||{}
-  history[d][theme]=history[d][theme]||[]
-  history[d][theme][i]=(history[d][theme][i]||0)+1
-  localStorage.setItem("history",JSON.stringify(history))
-  render()
+function tap(i){
+  const d=today();
+  history[d]=history[d]||{};
+  history[d][theme]=history[d][theme]||[];
+  history[d][theme][i]=(history[d][theme][i]||0)+1;
+  save();
+  render();
 }
 
 function tapRotate(){
-  tapIndex(index)
-  index=(index+1)%affirmations[theme].length
+  tap(index);
+  index=(index+1)%data[theme].length;
 }
 
-function getCount(i){
-  const d=new Date().toISOString().slice(0,10)
-  return history[d]?.[theme]?.[i]||0
+function add(){
+  const v=document.getElementById("input").value.trim();
+  if(!v) return;
+  data[theme].push(v);
+  document.getElementById("input").value="";
+  save();
+  render();
 }
 
 function del(i){
-  affirmations[theme].splice(i,1)
-  localStorage.setItem("affirmations",JSON.stringify(affirmations))
-  render()
+  data[theme].splice(i,1);
+  save();
+  render();
 }
 
-function addAffirmation(){
-  const v=document.getElementById("input").value.trim()
-  if(!v)return
-  affirmations[theme].push(v)
-  localStorage.setItem("affirmations",JSON.stringify(affirmations))
-  document.getElementById("input").value=""
-  render()
+function render(){
+  const aff=document.getElementById("aff");
+  const tapBtn=document.getElementById("tap");
+  const count=document.getElementById("count");
+  const list=document.getElementById("list");
+  const hist=document.getElementById("history");
+  const chal=document.getElementById("challenge");
+
+  list.innerHTML="";
+  aff.style.display=tapBtn.style.display=count.style.display =
+    mode==="rotate" ? "block" : "none";
+
+  if(mode==="rotate"){
+    aff.textContent=data[theme][index]||"Add an affirmation below";
+    count.textContent=`${getCount(index)} taps today`;
+  }
+
+  if(mode==="scroll"){
+    data[theme].forEach((t,i)=>{
+      const r=document.createElement("div");
+      r.className="row";
+      r.innerHTML=`
+        <div>${t}</div>
+        <div class="actions">
+          <div class="small" onclick="tap(${i})">Tap</div>
+          <div class="small delete" onclick="del(${i})">Delete</div>
+        </div>
+        <div class="count">${getCount(i)} taps today</div>
+      `;
+      list.appendChild(r);
+    });
+  }
+
+  const total = (history[today()]?.[theme]||[]).reduce((a,b)=>a+b,0);
+  chal.textContent = `Daily goal: ${DAILY_GOAL} • Remaining: ${Math.max(DAILY_GOAL-total,0)}`;
+
+  hist.textContent = (history[today()]?.[theme]||[])
+    .map((v,i)=>`#${i+1}: ${v} taps`).join("\n") || "No history yet";
 }
 
-function addAuto(){
-  const pool=autoBank[theme]
-  if(!pool)return
-  affirmations[theme].push(pool[Math.floor(Math.random()*pool.length)])
-  localStorage.setItem("affirmations",JSON.stringify(affirmations))
-  render()
+function getCount(i){
+  return history[today()]?.[theme]?.[i]||0;
 }
 
-function updateHistory(){
-  const d=new Date().toISOString().slice(0,10)
-  let txt=""
-  history[d]?.[theme]?.forEach((v,i)=>txt+=`#${i+1}: ${v} taps\n`)
-  document.getElementById("history").innerText=txt||"No history yet"
-}
-
-function goBack(){
-  document.getElementById("counter").style.display="none"
-  document.getElementById("themes").style.display="grid"
+function back(){
+  document.getElementById("screen").style.display="none";
+  document.getElementById("home").style.display="grid";
 }
 </script>
+
 </body>
 </html>
