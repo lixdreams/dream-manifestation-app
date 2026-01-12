@@ -1,5 +1,4 @@
 index.html
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,118 +15,27 @@ index.html
       --muted: #b6b6d8;
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:16px; }
+    h1 { font-weight:500; margin:12px 0 4px; }
+    .subtitle { color:var(--muted); font-size:0.9rem; }
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-    }
+    .themes { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:14px; width:100%; max-width:500px; margin-top:24px; }
+    .theme { background:var(--card); border-radius:18px; padding:18px; text-align:center; cursor:pointer; transition: transform 0.15s ease; user-select:none; }
+    .theme:active { transform:scale(0.96); }
 
-    h1 {
-      font-weight: 500;
-      margin: 12px 0 4px;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    /* THEME GRID */
-    .themes {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 14px;
-      width: 100%;
-      max-width: 500px;
-      margin-top: 24px;
-    }
-
-    .theme {
-      background: var(--card);
-      border-radius: 18px;
-      padding: 18px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.15s ease, background 0.2s ease;
-      user-select: none;
-    }
-
-    .theme:active {
-      transform: scale(0.96);
-    }
-
-    /* COUNTER SCREEN */
-    .counter-screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      width: 100%;
-      height: 80vh;
-    }
-
-    .affirmation {
-      font-size: 1.5rem;
-      max-width: 340px;
-      margin-bottom: 28px;
-      line-height: 1.4;
-    }
-
-    .tap-area {
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #c7b8ff33, #c7b8ff11);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      user-select: none;
-      cursor: pointer;
-      transition: transform 0.1s ease;
-    }
-
-    .tap-area:active {
-      transform: scale(0.95);
-    }
-
-    .count {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    button {
-      margin-top: 26px;
-      background: none;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 10px 20px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    button:active {
-      opacity: 0.8;
-    }
+    .counter-screen { display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; width:100%; height:80vh; }
+    .affirmation { font-size:1.5rem; max-width:340px; margin-bottom:24px; line-height:1.4; }
+    .tap-area { width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,#c7b8ff33,#c7b8ff11); display:flex; align-items:center; justify-content:center; font-size:2rem; user-select:none; cursor:pointer; transition: transform 0.1s ease; }
+    .tap-area:active { transform:scale(0.95); }
+    .count { margin-top:18px; color:var(--muted); font-size:0.95rem; }
+    button { margin-top:16px; background:none; border:1px solid var(--accent); color:var(--accent); padding:10px 20px; border-radius:999px; cursor:pointer; font-size:0.9rem; }
+    input[type=text] { padding:8px; border-radius:8px; border:none; width:80%; margin-top:12px; }
+    .history { margin-top:20px; max-width:340px; width:100%; text-align:left; font-size:0.9rem; color:var(--muted); }
+    .challenge { margin-top:16px; color:var(--accent); font-size:0.95rem; }
   </style>
 </head>
-
 <body>
-
   <h1>Dream</h1>
   <div class="subtitle">Tap to affirm ✨</div>
 
@@ -140,68 +48,121 @@ index.html
     <div class="theme" onclick="openTheme('Growth')">🌱 Growth</div>
   </div>
 
-  <!-- COUNTER -->
+  <!-- COUNTER SCREEN -->
   <div class="counter-screen" id="counter">
     <div class="affirmation" id="affirmation"></div>
-
-    <div class="tap-area" onclick="tapAffirm()">
-      Tap
-    </div>
-
+    <div class="tap-area" onclick="tapAffirm()">Tap</div>
     <div class="count" id="count"></div>
+
+    <!-- Add custom affirmation -->
+    <input type="text" id="newAffirmation" placeholder="Add your own affirmation" />
+    <button onclick="addAffirmation()">Add Affirmation</button>
+
+    <!-- Challenge display -->
+    <div class="challenge" id="challenge"></div>
+
+    <!-- History -->
+    <div class="history" id="history"></div>
 
     <button onclick="goBack()">Back</button>
   </div>
 
   <script>
-    const affirmations = {
-      Wealth: [
-        "Money flows to me effortlessly."
-      ],
-      Love: [
-        "I am deeply loved and valued."
-      ],
-      Career: [
-        "I am successful in everything I do."
-      ],
-      Confidence: [
-        "I trust myself completely."
-      ],
-      Growth: [
-        "I am constantly evolving into my best self."
-      ]
+    // Pre-set affirmations
+    const defaultAffirmations = {
+      Wealth: ["Money flows to me effortlessly.", "I attract abundance every day.", "I am worthy of wealth."],
+      Love: ["I am deeply loved and valued.", "I attract positive loving relationships.", "Love flows freely to me."],
+      Career: ["I am successful in everything I do.", "I achieve my goals easily.", "Opportunities come to me effortlessly."],
+      Confidence: ["I trust myself completely.", "I am confident in my abilities.", "I radiate self-assurance."],
+      Growth: ["I am constantly evolving into my best self.", "I embrace change positively.", "I learn from every experience."]
+    };
+
+    // Initialize user affirmations storage
+    let affirmations = JSON.parse(localStorage.getItem('affirmations')) || defaultAffirmations;
+    let history = JSON.parse(localStorage.getItem('history')) || {}; // {date: {theme: count}}
+    let challenges = {
+      daily: 50, // daily goal
     };
 
     let currentTheme = null;
     let tally = 0;
+    let currentIndex = 0;
 
+    // Open theme screen
     function openTheme(theme) {
       currentTheme = theme;
-      tally = Number(localStorage.getItem(theme)) || 0;
-
-      document.getElementById("affirmation").innerText =
-        affirmations[theme][0];
-
-      document.getElementById("count").innerText =
-        `Affirmed ${tally} times`;
-
-      document.getElementById("themes").style.display = "none";
-      document.getElementById("counter").style.display = "flex";
+      tally = Number(localStorage.getItem('tally_' + theme)) || 0;
+      currentIndex = 0;
+      showAffirmation();
+      document.getElementById('count').innerText = `Affirmed ${tally} times`;
+      document.getElementById('themes').style.display = 'none';
+      document.getElementById('counter').style.display = 'flex';
+      updateChallenge();
+      updateHistory();
     }
 
+    // Show current affirmation
+    function showAffirmation() {
+      document.getElementById('affirmation').innerText = affirmations[currentTheme][currentIndex];
+    }
+
+    // Tap to affirm
     function tapAffirm() {
       tally++;
-      localStorage.setItem(currentTheme, tally);
+      localStorage.setItem('tally_' + currentTheme, tally);
 
-      document.getElementById("count").innerText =
-        `Affirmed ${tally} times`;
+      // Add to history
+      let today = new Date().toISOString().slice(0,10);
+      if(!history[today]) history[today] = {};
+      history[today][currentTheme] = (history[today][currentTheme] || 0) + 1;
+      localStorage.setItem('history', JSON.stringify(history));
+
+      document.getElementById('count').innerText = `Affirmed ${tally} times`;
+      updateChallenge();
+      updateHistory();
+
+      // Move to next affirmation
+      currentIndex = (currentIndex + 1) % affirmations[currentTheme].length;
+      showAffirmation();
     }
 
+    // Add custom affirmation
+    function addAffirmation() {
+      let text = document.getElementById('newAffirmation').value.trim();
+      if(text) {
+        affirmations[currentTheme].push(text);
+        localStorage.setItem('affirmations', JSON.stringify(affirmations));
+        document.getElementById('newAffirmation').value = '';
+        alert('Affirmation added!');
+      }
+    }
+
+    // Update challenge display
+    function updateChallenge() {
+      let dailyCount = 0;
+      let today = new Date().toISOString().slice(0,10);
+      if(history[today] && history[today][currentTheme]) dailyCount = history[today][currentTheme];
+      let remaining = Math.max(challenges.daily - dailyCount, 0);
+      document.getElementById('challenge').innerText = `Daily goal: ${challenges.daily} | Remaining: ${remaining}`;
+    }
+
+    // Update history display
+    function updateHistory() {
+      let display = '';
+      let today = new Date().toISOString().slice(0,10);
+      for(let date in history) {
+        if(history[date][currentTheme]) {
+          display += `${date}: ${history[date][currentTheme]} taps\n`;
+        }
+      }
+      document.getElementById('history').innerText = display || 'No history yet';
+    }
+
+    // Go back to theme list
     function goBack() {
-      document.getElementById("counter").style.display = "none";
-      document.getElementById("themes").style.display = "grid";
+      document.getElementById('counter').style.display = 'none';
+      document.getElementById('themes').style.display = 'grid';
     }
   </script>
-
 </body>
 </html>
