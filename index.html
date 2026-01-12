@@ -70,7 +70,7 @@ index.html
   </div>
 
   <script>
-    // Pre-written affirmations bank
+    // Pre-written affirmations
     const defaultAffirmations = {
       Wealth: ["Money flows to me effortlessly.","I attract abundance every day.","I am worthy of wealth."],
       Love: ["I am deeply loved and valued.","I attract positive loving relationships.","Love flows freely to me."],
@@ -80,7 +80,7 @@ index.html
       Rampages: []
     };
 
-    // Auto affirmations bank (short themes only)
+    // Auto affirmations (short themes only)
     const autoAffirmationsBank = {
       Wealth: ["I am open to receiving wealth every day.","Abundance flows to me easily and effortlessly.","I deserve to live in prosperity.","Money comes to me from expected and unexpected sources."],
       Love: ["I attract positive loving relationships.","Love surrounds me wherever I go.","I am worthy of unconditional love."],
@@ -89,18 +89,27 @@ index.html
       Growth: ["I am always evolving into my best self.","Every challenge helps me grow stronger.","I embrace positive change."]
     };
 
-    // Initialize localStorage
+    // Load localStorage or defaults
     let affirmations = JSON.parse(localStorage.getItem('affirmations')) || defaultAffirmations;
     let history = JSON.parse(localStorage.getItem('history')) || {};
-    let challenges = { daily: 50 }; // daily goal
+    let challenges = { daily: 50 };
     let currentTheme = null;
     let tally = 0;
     let currentIndex = 0;
 
     function openTheme(theme) {
       currentTheme = theme;
+      // Initialize empty array if it doesn't exist
+      affirmations[theme] = affirmations[theme] || [];
       tally = Number(localStorage.getItem('tally_' + theme)) || 0;
       currentIndex = 0;
+
+      // Show first affirmation or placeholder
+      if(theme === "Rampages" && affirmations[theme].length === 0){
+        affirmations[theme].push("Your first rampage. Tap to count or add more below.");
+        localStorage.setItem('affirmations', JSON.stringify(affirmations));
+      }
+
       showAffirmation();
       document.getElementById('count').innerText = `Affirmed ${tally} times`;
       document.getElementById('themes').style.display = 'none';
@@ -111,21 +120,26 @@ index.html
     }
 
     function showAffirmation() {
-      if(currentTheme === "Rampages" && affirmations.Rampages.length > 0){
-        document.getElementById('affirmation').innerText = affirmations.Rampages[currentIndex];
-      } else if(currentTheme !== "Rampages") {
-        document.getElementById('affirmation').innerText = affirmations[currentTheme][currentIndex];
-      } else {
-        document.getElementById('affirmation').innerText = "No rampages yet. Add one below!";
+      if(affirmations[currentTheme].length === 0){
+        document.getElementById('affirmation').innerText = "No affirmations yet.";
+        return;
       }
+      document.getElementById('affirmation').innerText = affirmations[currentTheme][currentIndex];
     }
 
     function tapAffirm() {
-      if(!affirmations[currentTheme] || affirmations[currentTheme].length === 0) return;
+      // Initialize array if empty
+      if(!affirmations[currentTheme] || affirmations[currentTheme].length === 0){
+        affirmations[currentTheme] = currentTheme==="Rampages" ? ["Your first rampage"] : [];
+        localStorage.setItem('affirmations', JSON.stringify(affirmations));
+        currentIndex = 0;
+        showAffirmation();
+      }
+
       tally++;
       localStorage.setItem('tally_' + currentTheme, tally);
 
-      // Add to history
+      // Update history
       let today = new Date().toISOString().slice(0,10);
       if(!history[today]) history[today] = {};
       history[today][currentTheme] = (history[today][currentTheme] || 0) + 1;
@@ -152,11 +166,11 @@ index.html
     }
 
     function addAutoAffirmation() {
-      if(currentTheme === "Rampages") return;
+      if(currentTheme==="Rampages") return;
       let bank = autoAffirmationsBank[currentTheme];
       let existing = new Set(affirmations[currentTheme]);
-      let options = bank.filter(a => !existing.has(a));
-      if(options.length === 0){
+      let options = bank.filter(a=>!existing.has(a));
+      if(options.length===0){
         alert("No new auto affirmations left!");
         return;
       }
@@ -167,16 +181,15 @@ index.html
     }
 
     function updateChallenge() {
-      if(currentTheme === "Rampages") return;
+      if(currentTheme==="Rampages") return;
       let today = new Date().toISOString().slice(0,10);
       let dailyCount = (history[today] && history[today][currentTheme]) || 0;
-      let remaining = Math.max(challenges.daily - dailyCount, 0);
+      let remaining = Math.max(challenges.daily - dailyCount,0);
       document.getElementById('challenge').innerText = `Daily goal: ${challenges.daily} | Remaining: ${remaining}`;
     }
 
     function updateHistory() {
       let display = '';
-      let today = new Date().toISOString().slice(0,10);
       for(let date in history){
         if(history[date][currentTheme]){
           display += `${date}: ${history[date][currentTheme]} taps\n`;
@@ -189,7 +202,6 @@ index.html
       document.getElementById('counter').style.display = 'none';
       document.getElementById('themes').style.display = 'grid';
     }
-
   </script>
 </body>
 </html>
