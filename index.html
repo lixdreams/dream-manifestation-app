@@ -1,4 +1,5 @@
 index.html
+<!-- FULL HTML WITH WORKING TAP BUTTONS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -144,15 +145,16 @@ function renderView(){
       const tapBtn = document.createElement('div');
       tapBtn.className='tap-area';
       tapBtn.innerText='Tap';
-      tapBtn.onclick = () => {
+      // FIXED: Use addEventListener to ensure it works
+      tapBtn.addEventListener('click', ()=> {
         tapAffirmIndex(index);
-        renderView(); // update immediately
-      };
+        renderView();
+      });
 
       const deleteBtn = document.createElement('div');
       deleteBtn.className='delete-btn';
       deleteBtn.innerText='Delete';
-      deleteBtn.onclick = () => deleteAffirmation(index);
+      deleteBtn.addEventListener('click', ()=> deleteAffirmation(index));
 
       const countDiv = document.createElement('div');
       countDiv.className='count';
@@ -259,4 +261,4 @@ function goBack(){
 }
 </script>
 </body>
-</html
+</html>
