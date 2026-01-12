@@ -22,8 +22,10 @@ h1 { font-weight:500; margin:12px 0 4px; }
 .theme:active { transform:scale(0.96); }
 .counter-screen { display:none; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; width:100%; min-height:80vh; padding-top:16px; }
 .affirmation, .rampage-text { font-size:1.3rem; max-width:340px; margin-bottom:12px; line-height:1.4; white-space: pre-line; word-wrap: break-word; }
-.tap-area { width:160px; min-height:40px; border-radius:12px; background:radial-gradient(circle,#c7b8ff33,#c7b8ff11); display:flex; align-items:center; justify-content:center; font-size:1.2rem; user-select:none; cursor:pointer; transition: transform 0.1s ease; margin-top:6px; }
+.tap-area { width:120px; min-height:40px; border-radius:12px; background:radial-gradient(circle,#c7b8ff33,#c7b8ff11); display:flex; align-items:center; justify-content:center; font-size:1.2rem; user-select:none; cursor:pointer; transition: transform 0.1s ease; margin-top:6px; margin-right:6px; }
 .tap-area:active { transform:scale(0.95); }
+.delete-btn { width:60px; min-height:36px; border-radius:12px; background:#ff4d4d33; color:#ff4d4d; display:flex; align-items:center; justify-content:center; font-size:0.9rem; cursor:pointer; transition: transform 0.1s ease; margin-top:6px; }
+.delete-btn:active { transform:scale(0.95); }
 .count { margin-top:4px; color:var(--muted); font-size:0.85rem; }
 button { margin-top:12px; background:none; border:1px solid var(--accent); color:var(--accent); padding:8px 16px; border-radius:999px; cursor:pointer; font-size:0.85rem; }
 textarea { padding:8px; border-radius:8px; border:none; width:90%; margin-top:12px; background:#ffffff11; color:#fff; min-height:80px; resize:vertical; }
@@ -31,6 +33,7 @@ textarea { padding:8px; border-radius:8px; border:none; width:90%; margin-top:12
 .challenge { margin-top:12px; color:var(--accent); font-size:0.85rem; }
 .rampages-list { display:flex; flex-direction:column; gap:12px; margin-top:16px; width:100%; max-width:380px; overflow-y:auto; max-height:300px; }
 .mode-toggle { margin-top:12px; font-size:0.85rem; border:1px solid var(--accent); border-radius:999px; padding:6px 12px; cursor:pointer; color:var(--accent); background:none; }
+.rampage-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 </style>
 </head>
 <body>
@@ -38,7 +41,6 @@ textarea { padding:8px; border-radius:8px; border:none; width:90%; margin-top:12
 <h1>Dream</h1>
 <div class="subtitle">Tap to affirm ✨</div>
 
-<!-- THEMES -->
 <div class="themes" id="themes">
   <div class="theme" onclick="openTheme('Wealth')">💸 Wealth</div>
   <div class="theme" onclick="openTheme('Love')">💗 Love</div>
@@ -48,36 +50,24 @@ textarea { padding:8px; border-radius:8px; border:none; width:90%; margin-top:12
   <div class="theme" onclick="openTheme('Rampages')">💥 Rampages</div>
 </div>
 
-<!-- COUNTER SCREEN -->
 <div class="counter-screen" id="counter">
   <div id="affirmation" class="affirmation"></div>
   <div class="tap-area" id="tapArea" onclick="tapAffirm()">Tap</div>
   <div class="count" id="count"></div>
 
-  <!-- Add custom affirmation/rampage -->
   <textarea id="newAffirmation" placeholder="Add your own affirmation or rampage"></textarea>
   <button onclick="addAffirmation()">Add</button>
 
-  <!-- Auto affirmation (short themes only) -->
   <button id="autoAffirmBtn" onclick="addAutoAffirmation()">Add Auto Affirmation</button>
+  <button id="modeToggle" class="mode-toggle" onclick="toggleMode()" style="display:none;">Switch to Rotate Mode</button>
 
-  <!-- Rampages mode toggle -->
-  <button id="modeToggle" class="mode-toggle" onclick="toggleRampagesMode()" style="display:none;">Switch to Rotate Mode</button>
-
-  <!-- Challenge display -->
   <div class="challenge" id="challenge"></div>
-
-  <!-- History -->
   <div class="history" id="history"></div>
-
-  <!-- Rampages scrollable list -->
   <div id="rampagesList" class="rampages-list"></div>
-
   <button onclick="goBack()">Back</button>
 </div>
 
 <script>
-// Default affirmations
 const defaultAffirmations = {
   Wealth: ["Money flows to me effortlessly.","I attract abundance every day.","I am worthy of wealth."],
   Love: ["I am deeply loved and valued.","I attract positive loving relationships.","Love flows freely to me."],
@@ -101,7 +91,7 @@ let challenges = { daily: 50 };
 let currentTheme = null;
 let tally = 0;
 let currentIndex = 0;
-let rampagesMode = 'scroll'; // 'scroll' or 'rotate'
+let mode = 'scroll'; // scroll or rotate
 
 function openTheme(theme){
   currentTheme = theme;
@@ -109,62 +99,66 @@ function openTheme(theme){
   tally = Number(localStorage.getItem('tally_' + theme)) || 0;
   currentIndex = 0;
 
-  if(theme==="Rampages"){
-    document.getElementById('autoAffirmBtn').style.display='none';
-    document.getElementById('modeToggle').style.display='block';
-    renderRampagesView();
-  } else {
-    document.getElementById('autoAffirmBtn').style.display='block';
-    document.getElementById('modeToggle').style.display='none';
-    document.getElementById('affirmation').style.display='block';
-    document.getElementById('tapArea').style.display='flex';
-    document.getElementById('count').style.display='block';
-    showAffirmation();
-  }
-
   document.getElementById('themes').style.display='none';
   document.getElementById('counter').style.display='flex';
+
+  document.getElementById('autoAffirmBtn').style.display = theme === 'Rampages' ? 'none' : 'block';
+  document.getElementById('modeToggle').style.display = 'block';
+  document.getElementById('modeToggle').innerText = 'Switch to Rotate Mode';
+  mode = 'scroll';
+
+  renderView();
   updateChallenge();
   updateHistory();
 }
 
-function toggleRampagesMode(){
-  rampagesMode = rampagesMode==='scroll' ? 'rotate' : 'scroll';
-  document.getElementById('modeToggle').innerText = rampagesMode==='scroll' ? 'Switch to Rotate Mode':'Switch to Scroll Mode';
-  renderRampagesView();
+function toggleMode(){
+  mode = mode==='scroll'?'rotate':'scroll';
+  document.getElementById('modeToggle').innerText = mode==='scroll'?'Switch to Rotate Mode':'Switch to Scroll Mode';
+  renderView();
 }
 
-function renderRampagesView(){
-  const list = document.getElementById('rampagesList');
+function renderView(){
   const affEl = document.getElementById('affirmation');
   const tapEl = document.getElementById('tapArea');
   const countEl = document.getElementById('count');
-  list.innerHTML='';
+  const list = document.getElementById('rampagesList');
+  list.innerHTML = '';
 
-  if(rampagesMode==='scroll'){
+  if(mode==='scroll'){
     affEl.style.display='none';
     tapEl.style.display='none';
     countEl.style.display='none';
-    if(affirmations.Rampages.length===0){
-      list.innerHTML='<div style="color:var(--muted)">No rampages yet. Add one below!</div>';
+    if(affirmations[currentTheme].length===0){
+      list.innerHTML='<div style="color:var(--muted)">No affirmations yet. Add one below!</div>';
       return;
     }
-    affirmations.Rampages.forEach((rampage,index)=>{
+    affirmations[currentTheme].forEach((text,index)=>{
       const container = document.createElement('div');
-      const text = document.createElement('div');
-      text.className='rampage-text';
-      text.innerText=rampage;
+      container.className='rampage-row';
+      const textDiv = document.createElement('div');
+      textDiv.className='rampage-text';
+      textDiv.innerText = text;
+
       const tapBtn = document.createElement('div');
       tapBtn.className='tap-area';
       tapBtn.innerText='Tap';
-      tapBtn.onclick=()=>tapRampage(index);
+      tapBtn.onclick=()=>tapAffirmIndex(index);
+
+      const deleteBtn = document.createElement('div');
+      deleteBtn.className='delete-btn';
+      deleteBtn.innerText='Delete';
+      deleteBtn.onclick=()=>deleteAffirmation(index);
+
       const countDiv = document.createElement('div');
       countDiv.className='count';
       const today = new Date().toISOString().slice(0,10);
-      const count = history[today] && history[today].Rampages && history[today].Rampages[index] ? history[today].Rampages[index]:0;
-      countDiv.innerText=`Affirmed ${count} times today`;
-      container.appendChild(text);
+      const count = history[today] && history[today][currentTheme] && history[today][currentTheme][index] ? history[today][currentTheme][index] : 0;
+      countDiv.innerText = `Affirmed ${count} times today`;
+
+      container.appendChild(textDiv);
       container.appendChild(tapBtn);
+      container.appendChild(deleteBtn);
       container.appendChild(countDiv);
       list.appendChild(container);
     });
@@ -172,56 +166,54 @@ function renderRampagesView(){
     affEl.style.display='block';
     tapEl.style.display='flex';
     countEl.style.display='block';
-    if(affirmations.Rampages.length===0){
-      affirmations.Rampages.push("Your first rampage. Tap to count or add more below.");
+    if(affirmations[currentTheme].length===0){
+      affirmations[currentTheme].push("Your first affirmation");
       localStorage.setItem('affirmations',JSON.stringify(affirmations));
     }
-    affEl.innerText = affirmations.Rampages[currentIndex];
+    affEl.innerText = affirmations[currentTheme][currentIndex];
     const today = new Date().toISOString().slice(0,10);
-    const count = history[today] && history[today].Rampages && history[today].Rampages[currentIndex] ? history[today].Rampages[currentIndex]:0;
+    const count = history[today] && history[today][currentTheme] && history[today][currentTheme][currentIndex] ? history[today][currentTheme][currentIndex] : 0;
     countEl.innerText = `Affirmed ${count} times today`;
   }
 }
 
-function tapRampage(index){
-  const today = new Date().toISOString().slice(0,10);
-  history[today] = history[today] || {};
-  history[today].Rampages = history[today].Rampages || [];
-  history[today].Rampages[index] = (history[today].Rampages[index]||0)+1;
-  localStorage.setItem('history',JSON.stringify(history));
-  renderRampagesView();
+function tapAffirm(){
+  tapAffirmIndex(currentIndex);
+  if(mode==='rotate'){
+    currentIndex = (currentIndex + 1) % affirmations[currentTheme].length;
+    renderView();
+  }
 }
 
-function tapAffirm(){
-  if(!affirmations[currentTheme] || affirmations[currentTheme].length===0){
-    affirmations[currentTheme] = ["Your first affirmation"];
-    localStorage.setItem('affirmations',JSON.stringify(affirmations));
-    currentIndex=0;
-    showAffirmation();
-  }
-  tally++;
-  localStorage.setItem('tally_'+currentTheme,tally);
+function tapAffirmIndex(index){
   const today = new Date().toISOString().slice(0,10);
   history[today] = history[today] || {};
-  history[today][currentTheme] = (history[today][currentTheme]||0)+1;
+  history[today][currentTheme] = history[today][currentTheme] || [];
+  history[today][currentTheme][index] = (history[today][currentTheme][index]||0)+1;
   localStorage.setItem('history',JSON.stringify(history));
-  document.getElementById('count').innerText=`Affirmed ${tally} times`;
-  updateChallenge();
   updateHistory();
-  currentIndex = (currentIndex+1)%affirmations[currentTheme].length;
-  showAffirmation();
+  updateChallenge();
+}
+
+function deleteAffirmation(index){
+  if(!confirm("Are you sure you want to delete this affirmation?")) return;
+  affirmations[currentTheme].splice(index,1);
+  localStorage.setItem('affirmations',JSON.stringify(affirmations));
+  const today = new Date().toISOString().slice(0,10);
+  if(history[today] && history[today][currentTheme]) history[today][currentTheme].splice(index,1);
+  localStorage.setItem('history',JSON.stringify(history));
+  if(currentIndex >= affirmations[currentTheme].length) currentIndex = 0;
+  renderView();
 }
 
 function addAffirmation(){
-  let text = document.getElementById('newAffirmation').value.trim();
+  const text = document.getElementById('newAffirmation').value.trim();
   if(!text) return;
-  affirmations[currentTheme] = affirmations[currentTheme] || [];
   affirmations[currentTheme].push(text);
   localStorage.setItem('affirmations',JSON.stringify(affirmations));
   document.getElementById('newAffirmation').value='';
-  alert(currentTheme==="Rampages"?"Rampage added!":"Affirmation added!");
-  if(currentTheme==="Rampages") renderRampagesView();
-  else showAffirmation();
+  alert("Affirmation added!");
+  renderView();
 }
 
 function addAutoAffirmation(){
@@ -234,20 +226,13 @@ function addAutoAffirmation(){
   affirmations[currentTheme].push(newAff);
   localStorage.setItem('affirmations',JSON.stringify(affirmations));
   alert("Auto affirmation added!");
-}
-
-function showAffirmation(){
-  if(!affirmations[currentTheme] || affirmations[currentTheme].length===0){
-    document.getElementById('affirmation').innerText='No affirmations yet.';
-    return;
-  }
-  document.getElementById('affirmation').innerText = affirmations[currentTheme][currentIndex];
+  renderView();
 }
 
 function updateChallenge(){
   if(currentTheme==="Rampages") return;
   const today = new Date().toISOString().slice(0,10);
-  const dailyCount = (history[today] && history[today][currentTheme])||0;
+  const dailyCount = history[today] && history[today][currentTheme] ? history[today][currentTheme].reduce((a,b)=>a+b,0) : 0;
   const remaining = Math.max(challenges.daily - dailyCount,0);
   document.getElementById('challenge').innerText=`Daily goal: ${challenges.daily} | Remaining: ${remaining}`;
 }
@@ -256,14 +241,10 @@ function updateHistory(){
   const displayEl = document.getElementById('history');
   let display = '';
   const today = new Date().toISOString().slice(0,10);
-  if(currentTheme==="Rampages"){
-    if(history[today] && history[today].Rampages){
-      history[today].Rampages.forEach((val,index)=>display+=`Rampage #${index+1}: ${val} taps\n`);
-    }
-  } else {
-    for(let date in history){
-      if(history[date][currentTheme]) display+=`${date}: ${history[date][currentTheme]} taps\n`;
-    }
+  if(history[today] && history[today][currentTheme]){
+    history[today][currentTheme].forEach((val,index)=>{
+      display += `#${index+1}: ${val} taps\n`;
+    });
   }
   displayEl.innerText = display || 'No history yet';
 }
@@ -272,7 +253,6 @@ function goBack(){
   document.getElementById('counter').style.display='none';
   document.getElementById('themes').style.display='grid';
 }
-
 </script>
 </body>
-</html 
+</html>
