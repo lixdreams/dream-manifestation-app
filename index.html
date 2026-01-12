@@ -2,8 +2,8 @@ index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dream – Manifestation</title>
 
 <style>
@@ -42,19 +42,23 @@ h1{text-align:center;margin:6px 0}
 }
 
 .screen{display:none;max-width:500px;margin:0 auto}
+
 .aff{
   font-size:1.3rem;
   line-height:1.4;
   white-space:pre-line;
   margin:16px 0;
 }
+
 .tap{
   background:radial-gradient(circle,#c7b8ff33,#c7b8ff11);
   border-radius:14px;
   padding:12px;
   text-align:center;
   cursor:pointer;
+  user-select:none;
 }
+
 .count{color:var(--muted);font-size:.85rem;margin-top:4px}
 
 textarea{
@@ -66,6 +70,7 @@ textarea{
   border:none;
   color:#fff;
 }
+
 button{
   margin-top:10px;
   padding:8px 14px;
@@ -76,14 +81,34 @@ button{
   cursor:pointer;
 }
 
-.list{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.list{
+  margin-top:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
 .row{
   background:var(--card);
   border-radius:14px;
   padding:12px;
 }
-.actions{display:flex;gap:8px;margin-top:8px}
-.small{flex:1;padding:6px;border-radius:10px;text-align:center;background:#ffffff11;cursor:pointer}
+
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+
+.small{
+  flex:1;
+  padding:6px;
+  border-radius:10px;
+  text-align:center;
+  background:#ffffff11;
+  cursor:pointer;
+}
+
 .delete{color:#ff9b9b}
 
 .history{
@@ -92,7 +117,12 @@ button{
   color:var(--muted);
   white-space:pre-line;
 }
-.challenge{margin-top:10px;color:var(--accent);font-size:.85rem}
+
+.challenge{
+  margin-top:10px;
+  color:var(--accent);
+  font-size:.85rem;
+}
 </style>
 </head>
 
@@ -102,28 +132,28 @@ button{
 <div class="subtitle">Tap to affirm ✨</div>
 
 <div class="grid" id="home">
-  <div class="card" onclick="openTheme('Wealth')">💸 Wealth</div>
-  <div class="card" onclick="openTheme('Love')">💗 Love</div>
-  <div class="card" onclick="openTheme('Career')">💼 Career</div>
-  <div class="card" onclick="openTheme('Confidence')">✨ Confidence</div>
-  <div class="card" onclick="openTheme('Growth')">🌱 Growth</div>
-  <div class="card" onclick="openTheme('Rampages')">💥 Rampages</div>
+  <div class="card" data-theme="Wealth">💸 Wealth</div>
+  <div class="card" data-theme="Love">💗 Love</div>
+  <div class="card" data-theme="Career">💼 Career</div>
+  <div class="card" data-theme="Confidence">✨ Confidence</div>
+  <div class="card" data-theme="Growth">🌱 Growth</div>
+  <div class="card" data-theme="Rampages">💥 Rampages</div>
 </div>
 
 <div class="screen" id="screen">
   <div class="aff" id="aff"></div>
-  <div class="tap" id="tap" onclick="tapRotate()">Tap</div>
+  <div class="tap" id="tapBtn">Tap</div>
   <div class="count" id="count"></div>
 
   <textarea id="input" placeholder="Add affirmation or rampage"></textarea>
-  <button onclick="add()">Add</button>
-  <button onclick="toggle()">Switch Mode</button>
+  <button id="addBtn">Add</button>
+  <button id="modeBtn">Switch Mode</button>
 
   <div class="challenge" id="challenge"></div>
   <div class="list" id="list"></div>
   <div class="history" id="history"></div>
 
-  <button onclick="back()">Back</button>
+  <button id="backBtn">Back</button>
 </div>
 
 <script>
@@ -133,105 +163,127 @@ const today = () => new Date().toISOString().slice(0,10);
 let data = JSON.parse(localStorage.getItem("data")) || {
   Wealth:[], Love:[], Career:[], Confidence:[], Growth:[], Rampages:[]
 };
+
 let history = JSON.parse(localStorage.getItem("history")) || {};
-let theme="", index=0, mode="scroll";
+let theme = "", index = 0, mode = "scroll";
+
+const home = document.getElementById("home");
+const screen = document.getElementById("screen");
+const aff = document.getElementById("aff");
+const tapBtn = document.getElementById("tapBtn");
+const count = document.getElementById("count");
+const list = document.getElementById("list");
+const historyEl = document.getElementById("history");
+const challengeEl = document.getElementById("challenge");
 
 function save(){
-  localStorage.setItem("data",JSON.stringify(data));
-  localStorage.setItem("history",JSON.stringify(history));
+  localStorage.setItem("data", JSON.stringify(data));
+  localStorage.setItem("history", JSON.stringify(history));
 }
 
-function openTheme(t){
-  theme=t;
-  index=0;
-  mode="scroll";
-  document.getElementById("home").style.display="none";
-  document.getElementById("screen").style.display="block";
+home.querySelectorAll(".card").forEach(card=>{
+  card.addEventListener("click",()=>{
+    theme = card.dataset.theme;
+    index = 0;
+    mode = "scroll";
+    home.style.display="none";
+    screen.style.display="block";
+    render();
+  });
+});
+
+function toggleMode(){
+  mode = mode === "scroll" ? "rotate" : "scroll";
   render();
 }
 
-function toggle(){
-  mode = mode==="scroll" ? "rotate" : "scroll";
-  render();
-}
-
-function tap(i){
-  const d=today();
-  history[d]=history[d]||{};
-  history[d][theme]=history[d][theme]||[];
-  history[d][theme][i]=(history[d][theme][i]||0)+1;
+function tapAffirm(i){
+  const d = today();
+  history[d] = history[d] || {};
+  history[d][theme] = history[d][theme] || [];
+  history[d][theme][i] = (history[d][theme][i] || 0) + 1;
   save();
   render();
 }
 
-function tapRotate(){
-  tap(index);
-  index=(index+1)%data[theme].length;
+tapBtn.addEventListener("click",()=>{
+  if(!data[theme].length) return;
+  tapAffirm(index);
+  index = (index + 1) % data[theme].length;
+});
+
+function render(){
+  list.innerHTML = "";
+
+  if(mode === "rotate"){
+    aff.style.display = tapBtn.style.display = count.style.display = "block";
+    aff.textContent = data[theme][index] || "Add an affirmation below";
+    count.textContent = `${getCount(index)} taps today`;
+  } else {
+    aff.style.display = tapBtn.style.display = count.style.display = "none";
+    data[theme].forEach((text,i)=>{
+      const row = document.createElement("div");
+      row.className = "row";
+
+      const textDiv = document.createElement("div");
+      textDiv.textContent = text;
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const tap = document.createElement("div");
+      tap.className = "small";
+      tap.textContent = "Tap";
+      tap.addEventListener("click",()=>tapAffirm(i));
+
+      const del = document.createElement("div");
+      del.className = "small delete";
+      del.textContent = "Delete";
+      del.addEventListener("click",()=>{
+        data[theme].splice(i,1);
+        save();
+        render();
+      });
+
+      actions.appendChild(tap);
+      actions.appendChild(del);
+
+      const c = document.createElement("div");
+      c.className = "count";
+      c.textContent = `${getCount(i)} taps today`;
+
+      row.appendChild(textDiv);
+      row.appendChild(actions);
+      row.appendChild(c);
+      list.appendChild(row);
+    });
+  }
+
+  const total = (history[today()]?.[theme]||[]).reduce((a,b)=>a+b,0);
+  challengeEl.textContent = `Daily goal: ${DAILY_GOAL} • Remaining: ${Math.max(DAILY_GOAL-total,0)}`;
+
+  historyEl.textContent =
+    (history[today()]?.[theme]||[]).map((v,i)=>`#${i+1}: ${v} taps`).join("\n") || "No history yet";
 }
 
-function add(){
-  const v=document.getElementById("input").value.trim();
+function getCount(i){
+  return history[today()]?.[theme]?.[i] || 0;
+}
+
+document.getElementById("addBtn").addEventListener("click",()=>{
+  const v = document.getElementById("input").value.trim();
   if(!v) return;
   data[theme].push(v);
   document.getElementById("input").value="";
   save();
   render();
-}
+});
 
-function del(i){
-  data[theme].splice(i,1);
-  save();
-  render();
-}
-
-function render(){
-  const aff=document.getElementById("aff");
-  const tapBtn=document.getElementById("tap");
-  const count=document.getElementById("count");
-  const list=document.getElementById("list");
-  const hist=document.getElementById("history");
-  const chal=document.getElementById("challenge");
-
-  list.innerHTML="";
-  aff.style.display=tapBtn.style.display=count.style.display =
-    mode==="rotate" ? "block" : "none";
-
-  if(mode==="rotate"){
-    aff.textContent=data[theme][index]||"Add an affirmation below";
-    count.textContent=`${getCount(index)} taps today`;
-  }
-
-  if(mode==="scroll"){
-    data[theme].forEach((t,i)=>{
-      const r=document.createElement("div");
-      r.className="row";
-      r.innerHTML=`
-        <div>${t}</div>
-        <div class="actions">
-          <div class="small" onclick="tap(${i})">Tap</div>
-          <div class="small delete" onclick="del(${i})">Delete</div>
-        </div>
-        <div class="count">${getCount(i)} taps today</div>
-      `;
-      list.appendChild(r);
-    });
-  }
-
-  const total = (history[today()]?.[theme]||[]).reduce((a,b)=>a+b,0);
-  chal.textContent = `Daily goal: ${DAILY_GOAL} • Remaining: ${Math.max(DAILY_GOAL-total,0)}`;
-
-  hist.textContent = (history[today()]?.[theme]||[])
-    .map((v,i)=>`#${i+1}: ${v} taps`).join("\n") || "No history yet";
-}
-
-function getCount(i){
-  return history[today()]?.[theme]?.[i]||0;
-}
-
-function back(){
-  document.getElementById("screen").style.display="none";
-  document.getElementById("home").style.display="grid";
-}
+document.getElementById("modeBtn").addEventListener("click", toggleMode);
+document.getElementById("backBtn").addEventListener("click",()=>{
+  screen.style.display="none";
+  home.style.display="grid";
+});
 </script>
 
 </body>
