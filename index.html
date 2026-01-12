@@ -2,10 +2,9 @@ index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dream – Manifestation App</title>
-
   <style>
     :root {
       --bg: linear-gradient(180deg, #0f1023, #1b1d3a);
@@ -14,28 +13,27 @@ index.html
       --text: #ffffff;
       --muted: #b6b6d8;
     }
-
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
     body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:16px; }
     h1 { font-weight:500; margin:12px 0 4px; }
     .subtitle { color:var(--muted); font-size:0.9rem; }
-
-    .themes { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:14px; width:100%; max-width:500px; margin-top:24px; }
+    .themes { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; width:100%; max-width:500px; margin-top:24px; }
     .theme { background:var(--card); border-radius:18px; padding:18px; text-align:center; cursor:pointer; transition: transform 0.15s ease; user-select:none; }
     .theme:active { transform:scale(0.96); }
-
-    .counter-screen { display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; width:100%; height:80vh; }
-    .affirmation { font-size:1.5rem; max-width:340px; margin-bottom:24px; line-height:1.4; }
-    .tap-area { width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,#c7b8ff33,#c7b8ff11); display:flex; align-items:center; justify-content:center; font-size:2rem; user-select:none; cursor:pointer; transition: transform 0.1s ease; }
+    .counter-screen { display:none; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; width:100%; min-height:80vh; padding-top:16px; }
+    .affirmation, .rampage-text { font-size:1.3rem; max-width:340px; margin-bottom:24px; line-height:1.4; white-space: pre-line; word-wrap: break-word; }
+    .tap-area { width:260px; min-height:80px; border-radius:16px; background:radial-gradient(circle,#c7b8ff33,#c7b8ff11); display:flex; align-items:center; justify-content:center; font-size:2rem; user-select:none; cursor:pointer; transition: transform 0.1s ease; padding:12px; }
     .tap-area:active { transform:scale(0.95); }
     .count { margin-top:18px; color:var(--muted); font-size:0.95rem; }
     button { margin-top:16px; background:none; border:1px solid var(--accent); color:var(--accent); padding:10px 20px; border-radius:999px; cursor:pointer; font-size:0.9rem; }
-    input[type=text] { padding:8px; border-radius:8px; border:none; width:80%; margin-top:12px; }
-    .history { margin-top:20px; max-width:340px; width:100%; text-align:left; font-size:0.9rem; color:var(--muted); }
+    input[type=text], textarea { padding:8px; border-radius:8px; border:none; width:90%; margin-top:12px; background:#ffffff11; color:#fff; }
+    textarea { min-height:80px; resize:vertical; }
+    .history { margin-top:20px; max-width:340px; width:100%; text-align:left; font-size:0.85rem; color:var(--muted); white-space: pre-line; }
     .challenge { margin-top:16px; color:var(--accent); font-size:0.95rem; }
   </style>
 </head>
 <body>
+
   <h1>Dream</h1>
   <div class="subtitle">Tap to affirm ✨</div>
 
@@ -46,17 +44,21 @@ index.html
     <div class="theme" onclick="openTheme('Career')">💼 Career</div>
     <div class="theme" onclick="openTheme('Confidence')">✨ Confidence</div>
     <div class="theme" onclick="openTheme('Growth')">🌱 Growth</div>
+    <div class="theme" onclick="openTheme('Rampages')">💥 Rampages</div>
   </div>
 
   <!-- COUNTER SCREEN -->
   <div class="counter-screen" id="counter">
-    <div class="affirmation" id="affirmation"></div>
-    <div class="tap-area" onclick="tapAffirm()">Tap</div>
+    <div id="affirmation" class="affirmation"></div>
+    <div class="tap-area" id="tapArea" onclick="tapAffirm()">Tap</div>
     <div class="count" id="count"></div>
 
-    <!-- Add custom affirmation -->
-    <input type="text" id="newAffirmation" placeholder="Add your own affirmation" />
-    <button onclick="addAffirmation()">Add Affirmation</button>
+    <!-- Add custom affirmation/rampage -->
+    <textarea id="newAffirmation" placeholder="Add your own affirmation or rampage"></textarea>
+    <button onclick="addAffirmation()">Add</button>
+
+    <!-- Auto affirmation (short themes only) -->
+    <button id="autoAffirmBtn" onclick="addAutoAffirmation()">Add Auto Affirmation</button>
 
     <!-- Challenge display -->
     <div class="challenge" id="challenge"></div>
@@ -68,27 +70,33 @@ index.html
   </div>
 
   <script>
-    // Pre-set affirmations
+    // Pre-written affirmations bank
     const defaultAffirmations = {
-      Wealth: ["Money flows to me effortlessly.", "I attract abundance every day.", "I am worthy of wealth."],
-      Love: ["I am deeply loved and valued.", "I attract positive loving relationships.", "Love flows freely to me."],
-      Career: ["I am successful in everything I do.", "I achieve my goals easily.", "Opportunities come to me effortlessly."],
-      Confidence: ["I trust myself completely.", "I am confident in my abilities.", "I radiate self-assurance."],
-      Growth: ["I am constantly evolving into my best self.", "I embrace change positively.", "I learn from every experience."]
+      Wealth: ["Money flows to me effortlessly.","I attract abundance every day.","I am worthy of wealth."],
+      Love: ["I am deeply loved and valued.","I attract positive loving relationships.","Love flows freely to me."],
+      Career: ["I am successful in everything I do.","I achieve my goals easily.","Opportunities come to me effortlessly."],
+      Confidence: ["I trust myself completely.","I am confident in my abilities.","I radiate self-assurance."],
+      Growth: ["I am constantly evolving into my best self.","I embrace change positively.","I learn from every experience."],
+      Rampages: []
     };
 
-    // Initialize user affirmations storage
+    // Auto affirmations bank (short themes only)
+    const autoAffirmationsBank = {
+      Wealth: ["I am open to receiving wealth every day.","Abundance flows to me easily and effortlessly.","I deserve to live in prosperity.","Money comes to me from expected and unexpected sources."],
+      Love: ["I attract positive loving relationships.","Love surrounds me wherever I go.","I am worthy of unconditional love."],
+      Career: ["I attract amazing career opportunities.","I excel in everything I do.","I am recognized and rewarded for my talents."],
+      Confidence: ["I stand tall and speak my truth confidently.","I trust myself more every day.","Confidence flows through me effortlessly."],
+      Growth: ["I am always evolving into my best self.","Every challenge helps me grow stronger.","I embrace positive change."]
+    };
+
+    // Initialize localStorage
     let affirmations = JSON.parse(localStorage.getItem('affirmations')) || defaultAffirmations;
-    let history = JSON.parse(localStorage.getItem('history')) || {}; // {date: {theme: count}}
-    let challenges = {
-      daily: 50, // daily goal
-    };
-
+    let history = JSON.parse(localStorage.getItem('history')) || {};
+    let challenges = { daily: 50 }; // daily goal
     let currentTheme = null;
     let tally = 0;
     let currentIndex = 0;
 
-    // Open theme screen
     function openTheme(theme) {
       currentTheme = theme;
       tally = Number(localStorage.getItem('tally_' + theme)) || 0;
@@ -97,17 +105,23 @@ index.html
       document.getElementById('count').innerText = `Affirmed ${tally} times`;
       document.getElementById('themes').style.display = 'none';
       document.getElementById('counter').style.display = 'flex';
+      document.getElementById('autoAffirmBtn').style.display = (theme === "Rampages") ? 'none':'block';
       updateChallenge();
       updateHistory();
     }
 
-    // Show current affirmation
     function showAffirmation() {
-      document.getElementById('affirmation').innerText = affirmations[currentTheme][currentIndex];
+      if(currentTheme === "Rampages" && affirmations.Rampages.length > 0){
+        document.getElementById('affirmation').innerText = affirmations.Rampages[currentIndex];
+      } else if(currentTheme !== "Rampages") {
+        document.getElementById('affirmation').innerText = affirmations[currentTheme][currentIndex];
+      } else {
+        document.getElementById('affirmation').innerText = "No rampages yet. Add one below!";
+      }
     }
 
-    // Tap to affirm
     function tapAffirm() {
+      if(!affirmations[currentTheme] || affirmations[currentTheme].length === 0) return;
       tally++;
       localStorage.setItem('tally_' + currentTheme, tally);
 
@@ -121,48 +135,61 @@ index.html
       updateChallenge();
       updateHistory();
 
-      // Move to next affirmation
+      // Move to next item
       currentIndex = (currentIndex + 1) % affirmations[currentTheme].length;
       showAffirmation();
     }
 
-    // Add custom affirmation
     function addAffirmation() {
       let text = document.getElementById('newAffirmation').value.trim();
-      if(text) {
-        affirmations[currentTheme].push(text);
-        localStorage.setItem('affirmations', JSON.stringify(affirmations));
-        document.getElementById('newAffirmation').value = '';
-        alert('Affirmation added!');
-      }
+      if(!text) return;
+      affirmations[currentTheme] = affirmations[currentTheme] || [];
+      affirmations[currentTheme].push(text);
+      localStorage.setItem('affirmations', JSON.stringify(affirmations));
+      document.getElementById('newAffirmation').value = '';
+      alert(currentTheme==="Rampages" ? "Rampage added!" : "Affirmation added!");
+      showAffirmation();
     }
 
-    // Update challenge display
+    function addAutoAffirmation() {
+      if(currentTheme === "Rampages") return;
+      let bank = autoAffirmationsBank[currentTheme];
+      let existing = new Set(affirmations[currentTheme]);
+      let options = bank.filter(a => !existing.has(a));
+      if(options.length === 0){
+        alert("No new auto affirmations left!");
+        return;
+      }
+      let newAff = options[Math.floor(Math.random()*options.length)];
+      affirmations[currentTheme].push(newAff);
+      localStorage.setItem('affirmations', JSON.stringify(affirmations));
+      alert("Auto affirmation added!");
+    }
+
     function updateChallenge() {
-      let dailyCount = 0;
+      if(currentTheme === "Rampages") return;
       let today = new Date().toISOString().slice(0,10);
-      if(history[today] && history[today][currentTheme]) dailyCount = history[today][currentTheme];
+      let dailyCount = (history[today] && history[today][currentTheme]) || 0;
       let remaining = Math.max(challenges.daily - dailyCount, 0);
       document.getElementById('challenge').innerText = `Daily goal: ${challenges.daily} | Remaining: ${remaining}`;
     }
 
-    // Update history display
     function updateHistory() {
       let display = '';
       let today = new Date().toISOString().slice(0,10);
-      for(let date in history) {
-        if(history[date][currentTheme]) {
+      for(let date in history){
+        if(history[date][currentTheme]){
           display += `${date}: ${history[date][currentTheme]} taps\n`;
         }
       }
       document.getElementById('history').innerText = display || 'No history yet';
     }
 
-    // Go back to theme list
     function goBack() {
       document.getElementById('counter').style.display = 'none';
       document.getElementById('themes').style.display = 'grid';
     }
+
   </script>
 </body>
 </html>
