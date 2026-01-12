@@ -1,0 +1,206 @@
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dream – Manifestation App</title>
+
+  <style>
+    :root {
+      --bg: linear-gradient(180deg, #0f1023, #1b1d3a);
+      --card: rgba(255, 255, 255, 0.08);
+      --accent: #c7b8ff;
+      --text: #ffffff;
+      --muted: #b6b6d8;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+
+    h1 {
+      font-weight: 500;
+      margin: 12px 0 4px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* THEME GRID */
+    .themes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+      width: 100%;
+      max-width: 500px;
+      margin-top: 24px;
+    }
+
+    .theme {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease;
+      user-select: none;
+    }
+
+    .theme:active {
+      transform: scale(0.96);
+    }
+
+    /* COUNTER SCREEN */
+    .counter-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      height: 80vh;
+    }
+
+    .affirmation {
+      font-size: 1.5rem;
+      max-width: 340px;
+      margin-bottom: 28px;
+      line-height: 1.4;
+    }
+
+    .tap-area {
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #c7b8ff33, #c7b8ff11);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      user-select: none;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .tap-area:active {
+      transform: scale(0.95);
+    }
+
+    .count {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    button {
+      margin-top: 26px;
+      background: none;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 10px 20px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    button:active {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Dream</h1>
+  <div class="subtitle">Tap to affirm ✨</div>
+
+  <!-- THEMES -->
+  <div class="themes" id="themes">
+    <div class="theme" onclick="openTheme('Wealth')">💸 Wealth</div>
+    <div class="theme" onclick="openTheme('Love')">💗 Love</div>
+    <div class="theme" onclick="openTheme('Career')">💼 Career</div>
+    <div class="theme" onclick="openTheme('Confidence')">✨ Confidence</div>
+    <div class="theme" onclick="openTheme('Growth')">🌱 Growth</div>
+  </div>
+
+  <!-- COUNTER -->
+  <div class="counter-screen" id="counter">
+    <div class="affirmation" id="affirmation"></div>
+
+    <div class="tap-area" onclick="tapAffirm()">
+      Tap
+    </div>
+
+    <div class="count" id="count"></div>
+
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <script>
+    const affirmations = {
+      Wealth: [
+        "Money flows to me effortlessly."
+      ],
+      Love: [
+        "I am deeply loved and valued."
+      ],
+      Career: [
+        "I am successful in everything I do."
+      ],
+      Confidence: [
+        "I trust myself completely."
+      ],
+      Growth: [
+        "I am constantly evolving into my best self."
+      ]
+    };
+
+    let currentTheme = null;
+    let tally = 0;
+
+    function openTheme(theme) {
+      currentTheme = theme;
+      tally = Number(localStorage.getItem(theme)) || 0;
+
+      document.getElementById("affirmation").innerText =
+        affirmations[theme][0];
+
+      document.getElementById("count").innerText =
+        `Affirmed ${tally} times`;
+
+      document.getElementById("themes").style.display = "none";
+      document.getElementById("counter").style.display = "flex";
+    }
+
+    function tapAffirm() {
+      tally++;
+      localStorage.setItem(currentTheme, tally);
+
+      document.getElementById("count").innerText =
+        `Affirmed ${tally} times`;
+    }
+
+    function goBack() {
+      document.getElementById("counter").style.display = "none";
+      document.getElementById("themes").style.display = "grid";
+    }
+  </script>
+
+</body>
+</html>
